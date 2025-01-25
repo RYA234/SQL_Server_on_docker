@@ -1,0 +1,22 @@
+version: "3"
+services:
+    sql_server_db:
+        build: ./
+        environment:
+        
+            SA_PASSWORD: "user@12345"
+            ACCEPT_EULA: "Y"
+            MSSQL_AGENT_ENABLED: "true"
+            MSSQL_TCP_PORT: 1433
+            MSSQL_ENCRYPT: "false"  # 追加
+        ports:
+            - "1432:1433"
+        container_name: sql1
+        hostname: sql1
+        volumes:
+            - sqlserver-data:/var/opt/mssql
+            - ./src:/usr/src/docker/src
+        # entrypoint: ["src"]
+volumes:
+    sqlserver-data:
+        driver: local
