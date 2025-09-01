@@ -49,7 +49,7 @@ python test_mcp.py
 ```
 
 3. **Connect from PowerShell** (or any client):
-   - Connect to PostgreSQL: `localhost:5432`
+   - Connect to PostgreSQL: `localhost:5432` (user: mcp_user, password: mcp_pass)
    - Use MCP API to query SQL Server: `http://localhost:8000`
 
 ## Example API Usage
@@ -65,6 +65,21 @@ curl -X POST http://localhost:8000/query \
 
 # List SQL Server tables
 curl http://localhost:8000/tables
+```
+
+## Verification
+
+After starting the services, you should see:
+- PostgreSQL accessible on port 5432
+- MCP Server API on port 8000 returning SQL Server data
+- SQL Server accessible via MCP (bridged connection)
+
+Example successful test output:
+```
+✓ MCP Server root endpoint: SQL Server MCP is running
+✓ MCP Server health check: healthy
+✓ MCP Server SQL query successful, returned 1 rows
+✓ MCP Server tables endpoint: found 13 tables
 ```
 
 ## Client Connection Flow
