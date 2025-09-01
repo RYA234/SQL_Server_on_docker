@@ -1,14 +1,13 @@
-version: "3"
 services:
+    # Docker_B: SQL Server container
     sql_server_db:
         build: ./
         environment:
-        
             SA_PASSWORD: "user@12345"
             ACCEPT_EULA: "Y"
             MSSQL_AGENT_ENABLED: "true"
             MSSQL_TCP_PORT: 1433
-            MSSQL_ENCRYPT: "false"  # 追加
+            MSSQL_ENCRYPT: "false"
         ports:
             - "1432:1433"
         container_name: sql1
@@ -16,7 +15,44 @@ services:
         volumes:
             - sqlserver-data:/var/opt/mssql
             - ./src:/usr/src/docker/src
-        # entrypoint: ["src"]
+        networks:
+            - mcp_network
+
+    # Docker_A: PostgreSQL + Python MCP Server
+    postgresql_mcp:
+        image: postgres:15
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres123
+        ports:
+            - "5432:5432"
+        container_name: postgresql_mcp
+        hostname: postgresql_mcp
+        volumes:
+            - postgresql-data:/var/lib/postgresql/data
+            - ./mcp_server/init.sql:/docker-entrypoint-initdb.d/init.sql
+        networks:
+            - mcp_network
+
+    python_mcp_server:
+        build: ./mcp_server
+        ports:
+            - "8000:8000"
+        container_name: python_mcp
+        hostname: python_mcp
+        depends_on:
+            - sql_server_db
+            - postgresql_mcp
+        networks:
+            - mcp_network
+
+networks:
+    mcp_network:
+        driver: bridge
+
 volumes:
     sqlserver-data:
+        driver: local
+    postgresql-data:
         driver: local
